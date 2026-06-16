@@ -1,0 +1,268 @@
+[
+  {
+    "id": "C1",
+    "category": "Chaque page web a-t-elle un titre de page pertinent ?",
+    "title": "Contient le nom du site",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C2",
+    "category": "Chaque page web a-t-elle un titre de page pertinent ?",
+    "title": "Décrit le contenu ou la fonction de la page",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C3",
+    "category": "Chaque page web a-t-elle un titre de page pertinent ?",
+    "title": "Précise quelle est l'étape en cours d'un processus",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C4",
+    "category": "Chaque page web a-t-elle un titre de page pertinent ?",
+    "title": "Dans une série de résultats de recherche, précise quel est l'intervalle de résultats affichés.",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C5",
+    "category": "Chaque image porteuse d’information a-t-elle une alternative textuelle pertinente ?",
+    "title": "Vérifier que l'alternative textuelle est présente",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C6",
+    "category": "Chaque image porteuse d’information a-t-elle une alternative textuelle pertinente ?",
+    "title": "Vérifier que l'alternative textuelle est pertinente",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C7",
+    "category": "Chaque image de décoration est-elle correctement ignorée par les technologies d’assistance ?",
+    "title": "Vérifier que les images de décoration possèdent un attribut alt vide",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C8",
+    "category": "Chaque image de décoration est-elle correctement ignorée par les technologies d’assistance ?",
+    "title": "Vérifier que les images de décoration, quand elles le necessitent (SVG), sont  ignorées par les outils d'assistance",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C9",
+    "category": "Dans chaque page web, l’information est-elle structurée par l’utilisation appropriée de titres ?",
+    "title": "La page doit être structurée selon un ordre logique",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C10",
+    "category": "Dans chaque page web, l’information est-elle structurée par l’utilisation appropriée de titres ?",
+    "title": "Un titre doit décrire le contenu qu’il introduit",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C11",
+    "category": "Dans chaque page web, l’information est-elle structurée par l’utilisation appropriée de titres ?",
+    "title": "Pas de titres \"simulés\" sans valeur sémantique",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C12",
+    "category": "Dans chaque page web, le contraste entre la couleur du texte et la couleur de son arrière-plan est-il suffisamment élevé  ?\r\nles couleurs utilisées dans les composants d’interface sont-ils suffisamment élevé  ?",
+    "title": "Ratio de contraste minimal de 4.5:1 pour les textes de moins de 24px, ou 18.5px en gras",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C13",
+    "category": "Dans chaque page web, le contraste entre la couleur du texte et la couleur de son arrière-plan est-il suffisamment élevé  ?\r\nles couleurs utilisées dans les composants d’interface sont-ils suffisamment élevé  ?",
+    "title": "Ratio de contraste minimal de 3:1 pour les textes de plus de 24px ou 18.5px en gras",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C14",
+    "category": "Redimensionnement et zoom",
+    "title": "Zoom jusqu'à 200%\r\n- Redimentionnement à 320px de large\r\n- Tous les textes doivent pouvoir être agrandis\r\n- Les textes ou contenus ne doivent pas être coupés\r\n- Les textes ou contenus ne doivent pas se superposer\r\n- Tous les boutons, champs et éléments de contrôles doivent rester visibles et utilisables",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C15",
+    "category": "Focus et navigation au clavier",
+    "title": "La prise du focus doit être visible",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C16",
+    "category": "Focus et navigation au clavier",
+    "title": "Un menu d'évitement est présent",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C17",
+    "category": "Focus et navigation au clavier",
+    "title": "Tous les composants doivent fonctionner au clavier",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C18",
+    "category": "Formulaires",
+    "title": "Chaque champ est associé à son label",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C19",
+    "category": "Formulaires",
+    "title": "Les labels sont visuellement accolés à leurs champs",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C20",
+    "category": "Formulaires",
+    "title": "Les champs obligatoires sont indiqués et associés aux champs",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C21",
+    "category": "Formulaires",
+    "title": "Les champs de même nature sont regroupés",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C22",
+    "category": "Formulaires",
+    "title": "Le format attendu pour les champs est indiqués (avant validation)",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C23",
+    "category": "Formulaires",
+    "title": "Un exemple de saisie valide est proposé",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C24",
+    "category": "Formulaires",
+    "title": "Les champs correctement renseignés ne doivent pas être réinitialisés",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C25",
+    "category": "Formulaires",
+    "title": "Les erreurs sont clairement indiquées et reliées aux champs",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C26",
+    "category": "Formulaires",
+    "title": "Utilisation d'autocomplete",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C27",
+    "category": "Éléments en mouvements, clignotants ou flashant",
+    "title": "Les animations visuelles de plus de 5 secondes et les sons de plus de 3 secondes doivent être dotés de moyen de contrôles.",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C28",
+    "category": "Éléments en mouvements, clignotants ou flashant",
+    "title": "Laisser à l'utilisateur le contrôle des animations",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C29",
+    "category": "Éléments en mouvements, clignotants ou flashant",
+    "title": "Utilisation de prefers-reduced-motion pour déterminer si les animations sont activées",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C30",
+    "category": "Multimédia (vidéo, audio)",
+    "title": "Les éléments multimédias doivent pouvoir être contrôlés au clavier",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C31",
+    "category": "Multimédia (vidéo, audio)",
+    "title": "Vérifier la présence de sous-titre et de transcription",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C32",
+    "category": "Structure de l’information\r\nVérifier la présence des landmarks",
+    "title": "Zone d’en-tête : <header role=\"banner\">",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C33",
+    "category": "Structure de l’information\r\nVérifier la présence des landmarks",
+    "title": "Menu de navigation principal : <nav role=\"navigation”>",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C34",
+    "category": "Structure de l’information\r\nVérifier la présence des landmarks",
+    "title": "Contenu principal : <main role=\"main\">",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C35",
+    "category": "Structure de l’information\r\nVérifier la présence des landmarks",
+    "title": "Pied de page : <footer role=\"contentinfo\">",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C36",
+    "category": "Structure de l’information\r\nVérifier la présence des landmarks",
+    "title": "Moteur de recherche : <search role=\"search>",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C37",
+    "category": "Langue de la page",
+    "title": "Vérifier la présence d'un attribut lang sur la balise html",
+    "defaultConformity": "NT",
+    "notes": ""
+  },
+  {
+    "id": "C38",
+    "category": "Langue de la page",
+    "title": "Vérifier la présence d'une balise avec un attribut lang englobant chaque changement de langue",
+    "defaultConformity": "NT",
+    "notes": ""
+  }
+]
