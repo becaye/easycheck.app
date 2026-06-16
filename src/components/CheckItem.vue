@@ -26,11 +26,11 @@ function onComment(event: Event): void {
 </script>
 
 <template>
-  <li class="check-item" :data-status="result?.status">
-    <div class="check-header">
-      <p class="check-title">{{ check.title }}</p>
+  <li class="ec-check-item" :data-status="result?.status">
+    <div class="ec-check-header">
+      <p class="ec-check-title fr-text--sm fr-mb-0">{{ check.title }}</p>
       <div
-        class="status-group"
+        class="ec-status-group"
         role="group"
         :aria-label="`Statut pour : ${check.title}`"
       >
@@ -38,8 +38,8 @@ function onComment(event: Event): void {
           v-for="option in STATUS_OPTIONS"
           :key="option.value"
           type="button"
-          class="status-btn"
-          :class="{ active: result?.status === option.value }"
+          class="ec-status-btn"
+          :class="{ 'ec-status-btn--active': result?.status === option.value }"
           :style="{ '--btn-color': option.color }"
           :aria-pressed="result?.status === option.value"
           @click="selectStatus(option.value)"
@@ -49,12 +49,13 @@ function onComment(event: Event): void {
       </div>
     </div>
     <textarea
-      class="check-comment"
+      class="fr-input ec-check-comment"
       rows="1"
+      :id="`comment-${check.id}-${pageId}`"
+      :aria-label="`Commentaire pour : ${check.title}`"
       placeholder="Commentaire (optionnel)…"
       :value="result?.comment"
       @input="onComment"
     ></textarea>
   </li>
 </template>
-

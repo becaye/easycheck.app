@@ -1,3 +1,5 @@
+import '@gouvfr/dsfr/dist/dsfr.min.css'
+import '@gouvfr/dsfr/dist/utility/icons/icons.min.css'
 import './style.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

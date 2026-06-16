@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import CheckItem from '@/components/CheckItem.vue'
 import { getStatusOption } from '@/constants/status.ts'
 import { useAuditStore } from '@/stores/audit.ts'
+import type { ConformityStatus } from '@/types/check.ts'
 
 const props = defineProps<{ pageId: string }>()
 
@@ -19,44 +20,80 @@ const progress = computed(() => {
   return Math.round(((total - stats.value.NT) / total) * 100)
 })
 
+const STATUS_BADGE_CLASS: Record<ConformityStatus, string> = {
+  NT: 'fr-badge--new fr-badge--no-icon',
+  C: 'fr-badge--success fr-badge--no-icon',
+  NC: 'fr-badge--error fr-badge--no-icon',
+  NA: 'fr-badge--warning fr-badge--no-icon',
+}
+
+function getStatusBadgeClass(status: ConformityStatus): string {
+  return STATUS_BADGE_CLASS[status]
+}
+
 function goHome(): void {
   router.push({ name: 'home' })
 }
 </script>
 
 <template>
-  <div v-if="page" class="view">
-    <header class="view-header">
-      <button type="button" class="btn-back" @click="goHome">← Échantillon</button>
-      <h1>{{ page.title }}</h1>
-      <p class="subtitle">
-        <a :href="page.url" target="_blank" rel="noopener">{{ page.url }}</a>
-      </p>
-    </header>
+  <div v-if="page" class="fr-container fr-py-4w">
 
-    <div class="progress-bar" :aria-label="`Progression : ${progress}%`">
-      <div class="progress-fill" :style="{ width: `${progress}%` }"></div>
-      <span class="progress-label">{{ progress }}% évalué</span>
+    <!-- Fil d'Ariane -->
+    <nav role="navigation" class="fr-breadcrumb fr-mb-3w" aria-label="vous êtes ici :">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <RouterLink to="/" class="fr-breadcrumb__link">Accueil</RouterLink>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">{{ page.title }}</a>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- En-tête de page -->
+    <div class="fr-mb-4w">
+      <h1 class="fr-h1 fr-mb-1w">{{ page.title }}</h1>
+      <p>
+        <a :href="page.url" target="_blank" rel="noopener" class="fr-link">
+          {{ page.url }}
+        </a>
+      </p>
     </div>
 
-    <div class="stats-row">
+    <!-- Barre de progression -->
+    <div
+      class="ec-progress fr-mb-2w"
+      role="progressbar"
+      :aria-valuenow="progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      :aria-label="`Progression : ${progress}%`"
+    >
+      <div class="ec-progress__fill" :style="{ width: `${progress}%` }"></div>
+      <span class="ec-progress__label">{{ progress }}&nbsp;% évalué</span>
+    </div>
+
+    <!-- Badges de statut -->
+    <div class="fr-mb-4w" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
       <span
         v-for="(count, status) in stats"
         :key="status"
-        class="stat-chip"
-        :style="{ '--chip-color': getStatusOption(status).color }"
+        class="fr-badge"
+        :class="getStatusBadgeClass(status as ConformityStatus)"
       >
-        {{ getStatusOption(status).label }} : <strong>{{ count }}</strong>
+        {{ getStatusOption(status as ConformityStatus).label }}&nbsp;: {{ count }}
       </span>
     </div>
 
+    <!-- Critères par catégorie -->
     <section
       v-for="group in store.checksByCategory"
       :key="group.category"
-      class="category"
+      class="fr-mb-4w"
     >
-      <h2 class="category-title">{{ group.category }}</h2>
-      <ul class="check-list">
+      <h2 class="fr-h5 ec-category-title">{{ group.category }}</h2>
+      <ul class="ec-check-list">
         <CheckItem
           v-for="check in group.items"
           :key="check.id"
@@ -66,17 +103,26 @@ function goHome(): void {
       </ul>
     </section>
 
-    <footer class="view-footer">
-      <RouterLink :to="{ name: 'summary' }" class="btn-primary">
-        Voir la synthèse →
+    <!-- Pied de vue -->
+    <div class="fr-mt-4w">
+      <RouterLink
+        :to="{ name: 'summary' }"
+        class="fr-btn fr-icon-arrow-right-line fr-btn--icon-right"
+      >
+        Voir la synthèse
       </RouterLink>
-    </footer>
+    </div>
+
   </div>
 
-  <div v-else class="view empty-state">
-    <p>Page introuvable.</p>
-    <button type="button" class="btn-primary" @click="goHome">
-      Retour à l’échantillon
+  <!-- Page introuvable -->
+  <div v-else class="fr-container fr-py-6w">
+    <div class="fr-alert fr-alert--error fr-mb-3w">
+      <h3 class="fr-alert__title">Page introuvable</h3>
+      <p>Cette page n'existe pas dans l'échantillon d'audit.</p>
+    </div>
+    <button type="button" class="fr-btn" @click="goHome">
+      Retour à l'échantillon
     </button>
   </div>
 </template>

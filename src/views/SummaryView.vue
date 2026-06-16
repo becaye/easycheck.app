@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getStatusOption, STATUS_OPTIONS } from '@/constants/status.ts'
+import { STATUS_OPTIONS } from '@/constants/status.ts'
 import { useAuditStore } from '@/stores/audit.ts'
 import type { ConformityStatus } from '@/types/check.ts'
 
 const store = useAuditStore()
+
+const STATUS_BADGE_CLASS: Record<ConformityStatus, string> = {
+  NT: 'fr-badge--new fr-badge--no-icon',
+  C: 'fr-badge--success fr-badge--no-icon',
+  NC: 'fr-badge--error fr-badge--no-icon',
+  NA: 'fr-badge--warning fr-badge--no-icon',
+}
+
+function getStatusBadgeClass(status: ConformityStatus): string {
+  return STATUS_BADGE_CLASS[status]
+}
 
 /** Totaux consolidés sur l'ensemble des pages. */
 const totals = computed(() => {
@@ -37,42 +48,58 @@ const blockingByPage = computed(() =>
 </script>
 
 <template>
-  <div class="view">
-    <header class="view-header">
-      <RouterLink :to="{ name: 'home' }" class="btn-back">← Échantillon</RouterLink>
-      <h1>Synthèse</h1>
-      <p v-if="store.meta.site" class="subtitle">
+  <div class="fr-container fr-py-4w">
+    <!-- Fil d'Ariane -->
+    <nav role="navigation" class="fr-breadcrumb fr-mb-3w" aria-label="vous êtes ici :">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <RouterLink to="/" class="fr-breadcrumb__link">Accueil</RouterLink>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Synthèse</a>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="fr-mb-4w">
+      <h1 class="fr-h1 fr-mb-1w">Synthèse</h1>
+      <p v-if="store.meta.site" class="fr-text--lead">
         {{ store.meta.site }} · {{ store.meta.date }}
       </p>
-    </header>
+    </div>
 
-    <p v-if="!store.pages.length" class="empty-state">
-      Aucune page auditée pour le moment.
-    </p>
+    <!-- Aucune page -->
+    <div v-if="!store.pages.length" class="fr-alert fr-alert--info">
+      <p>Aucune page auditée pour le moment.</p>
+    </div>
 
     <template v-else>
-      <section class="card score-card">
-        <div class="score-main">
-          <span class="score-value">
-            {{ conformityRate === null ? '—' : `${conformityRate}%` }}
+      <!-- ── Score global ─────────────────────────────── -->
+      <div class="fr-callout fr-mb-4w ec-score-callout">
+        <div class="ec-score-main">
+          <span class="ec-score-value">
+            {{ conformityRate === null ? '—' : `${conformityRate} %` }}
           </span>
-          <span class="score-label">Taux de conformité</span>
+          <p class="fr-callout__text fr-mb-2w">
+            Taux de conformité (C&nbsp;/&nbsp;C+NC)
+          </p>
         </div>
-        <div class="totals-row">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
           <span
             v-for="option in STATUS_OPTIONS"
             :key="option.value"
-            class="stat-chip"
-            :style="{ '--chip-color': option.color }"
+            class="fr-badge"
+            :class="getStatusBadgeClass(option.value)"
           >
-            {{ option.label }} : <strong>{{ totals[option.value] }}</strong>
+            {{ option.label }}&nbsp;: {{ totals[option.value] }}
           </span>
         </div>
-      </section>
+      </div>
 
-      <section class="card">
-        <h2>Détail par page</h2>
-        <table class="summary-table">
+      <!-- ── Détail par page ──────────────────────────── -->
+      <div class="fr-table fr-mb-4w">
+        <table>
+          <caption>Détail par page</caption>
           <thead>
             <tr>
               <th scope="col">Page</th>
@@ -90,6 +117,7 @@ const blockingByPage = computed(() =>
               <th scope="row">
                 <RouterLink
                   :to="{ name: 'audit', params: { pageId: page.id } }"
+                  class="fr-link"
                 >
                   {{ page.title }}
                 </RouterLink>
@@ -103,34 +131,44 @@ const blockingByPage = computed(() =>
             </tr>
           </tbody>
         </table>
-      </section>
+      </div>
 
-      <section class="card">
-        <h2>Points bloquants (non conformes)</h2>
-        <template v-for="entry in blockingByPage" :key="entry.page.id">
-          <div v-if="entry.issues.length" class="blocking-group">
-            <h3>{{ entry.page.title }}</h3>
-            <ul class="blocking-list">
-              <li
-                v-for="check in entry.issues"
-                :key="check.id"
-                :style="{ '--chip-color': getStatusOption('NC').color }"
-              >
-                <strong>{{ check.category }}</strong> — {{ check.title }}
-                <em v-if="entry.page.results[check.id].comment">
-                  ({{ entry.page.results[check.id].comment }})
-                </em>
-              </li>
-            </ul>
+      <!-- ── Points bloquants ─────────────────────────── -->
+      <div class="fr-card">
+        <div class="fr-card__body">
+          <div class="fr-card__content">
+            <h2 class="fr-h4 fr-mb-3w">Points bloquants (non conformes)</h2>
+
+            <template v-for="entry in blockingByPage" :key="entry.page.id">
+              <div v-if="entry.issues.length" class="ec-blocking-group fr-mb-3w">
+                <h3 class="fr-h6">{{ entry.page.title }}</h3>
+                <ul class="ec-blocking-list">
+                  <li
+                    v-for="check in entry.issues"
+                    :key="check.id"
+                  >
+                    <strong>{{ check.category }}</strong>
+                    — {{ check.title }}
+                    <em
+                      v-if="entry.page.results[check.id].comment"
+                      class="fr-text--sm"
+                    >
+                      ({{ entry.page.results[check.id].comment }})
+                    </em>
+                  </li>
+                </ul>
+              </div>
+            </template>
+
+            <div
+              v-if="blockingByPage.every((e) => !e.issues.length)"
+              class="fr-alert fr-alert--success"
+            >
+              <p>Aucun point bloquant détecté.</p>
+            </div>
           </div>
-        </template>
-        <p
-          v-if="blockingByPage.every((e) => !e.issues.length)"
-          class="no-issues"
-        >
-          ✅ Aucun point bloquant détecté.
-        </p>
-      </section>
+        </div>
+      </div>
     </template>
   </div>
 </template>
