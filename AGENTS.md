@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Vite + TypeScript application for accessibility evaluation ("easy checks"). The root-level CSV/Excel files (`criteres.csv`, `grille-reduite.xlsx`, `atelier-easy-checks.xlsx`) contain accessibility criteria data that is expected to drive the UI. Vue 3, Pinia, and Vue Router are installed but **not yet wired up** — the current entry point (`src/main.ts`) uses vanilla DOM manipulation.
+Vite + TypeScript application for accessibility evaluation ("easy checks"). The root-level CSV/Excel files (`grille-reduite.xlsx`) contain accessibility criteria data that is expected to drive the UI. Vue 3, Pinia, and Vue Router are installed but **not yet wired up** — the current entry point (`src/main.ts`) uses vanilla DOM manipulation.
 
 ## Stack
 
@@ -64,9 +64,7 @@ Icons are served as an SVG sprite at `public/icons.svg`. Reference icons with:
 | `src/counter.ts` | Example pattern for exported setup functions |
 | `src/style.css` | All global styles + design tokens |
 | `public/icons.svg` | SVG sprite for UI icons |
-| `criteres.csv` | Accessibility criteria dataset |
 | `grille-reduite.xlsx` | Reduced evaluation grid |
-| `atelier-easy-checks.xlsx` | Workshop evaluation sheet |
 
 ## Migration Path to Vue
 
