@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { DsfrInput } from '@gouvminint/vue-dsfr'
 import { useAuditStore } from '@/stores/audit.ts'
+import type { AuditMeta } from '@/types/check.ts'
 
 const store = useAuditStore()
 const router = useRouter()
 
 const form = reactive({ title: '', url: '' })
+
+function setMeta(key: keyof AuditMeta, value: string | number | undefined): void {
+  store.meta[key] = String(value ?? '')
+}
+
+function setForm(key: keyof typeof form, value: string | number | undefined): void {
+  form[key] = String(value ?? '')
+}
 
 function addPage(): void {
   const title = form.title.trim()
@@ -47,51 +57,44 @@ function confirmReset(): void {
           <h2 class="fr-h4 fr-mb-3w">Informations de l'audit</h2>
           <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group">
-                <label class="fr-label" for="meta-site">Site</label>
-                <input
-                  id="meta-site"
-                  v-model="store.meta.site"
-                  class="fr-input"
-                  type="text"
-                  placeholder="Nom du site"
-                />
-              </div>
+              <DsfrInput
+                id="meta-site"
+                label="Site"
+                label-visible
+                placeholder="Nom du site"
+                :model-value="store.meta.site"
+                @update:model-value="setMeta('site', $event)"
+              />
             </div>
             <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group">
-                <label class="fr-label" for="meta-auditor">Auditeur·rice</label>
-                <input
-                  id="meta-auditor"
-                  v-model="store.meta.auditor"
-                  class="fr-input"
-                  type="text"
-                  placeholder="Votre nom"
-                />
-              </div>
+              <DsfrInput
+                id="meta-auditor"
+                label="Auditeur·rice"
+                label-visible
+                placeholder="Votre nom"
+                :model-value="store.meta.auditor"
+                @update:model-value="setMeta('auditor', $event)"
+              />
             </div>
             <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group">
-                <label class="fr-label" for="meta-context">Contexte</label>
-                <input
-                  id="meta-context"
-                  v-model="store.meta.context"
-                  class="fr-input"
-                  type="text"
-                  placeholder="Sprint, version…"
-                />
-              </div>
+              <DsfrInput
+                id="meta-context"
+                label="Contexte"
+                label-visible
+                placeholder="Sprint, version…"
+                :model-value="store.meta.context"
+                @update:model-value="setMeta('context', $event)"
+              />
             </div>
             <div class="fr-col-12 fr-col-md-6">
-              <div class="fr-input-group">
-                <label class="fr-label" for="meta-date">Date</label>
-                <input
-                  id="meta-date"
-                  v-model="store.meta.date"
-                  class="fr-input"
-                  type="date"
-                />
-              </div>
+              <DsfrInput
+                id="meta-date"
+                label="Date"
+                label-visible
+                type="date"
+                :model-value="store.meta.date"
+                @update:model-value="setMeta('date', $event)"
+              />
             </div>
           </div>
         </div>
@@ -106,35 +109,28 @@ function confirmReset(): void {
           <form @submit.prevent="addPage">
             <div class="fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12 fr-col-md-6">
-                <div class="fr-input-group">
-                  <label class="fr-label" for="page-title">
-                    Titre de la page
-                  </label>
-                  <input
-                    id="page-title"
-                    v-model="form.title"
-                    class="fr-input"
-                    type="text"
-                    placeholder="Accueil, Contact…"
-                    required
-                  />
-                </div>
+                <DsfrInput
+                  id="page-title"
+                  label="Titre de la page"
+                  label-visible
+                  placeholder="Accueil, Contact…"
+                  :model-value="form.title"
+                  required
+                  @update:model-value="setForm('title', $event)"
+                />
               </div>
               <div class="fr-col-12 fr-col-md-6">
-                <div class="fr-input-group">
-                  <label class="fr-label" for="page-url">
-                    URL de la page
-                    <span class="fr-hint-text">Champ obligatoire</span>
-                  </label>
-                  <input
-                    id="page-url"
-                    v-model="form.url"
-                    class="fr-input"
-                    type="url"
-                    placeholder="https://…"
-                    required
-                  />
-                </div>
+                <DsfrInput
+                  id="page-url"
+                  label="URL de la page"
+                  hint="Champ obligatoire"
+                  label-visible
+                  type="url"
+                  placeholder="https://…"
+                  :model-value="form.url"
+                  required
+                  @update:model-value="setForm('url', $event)"
+                />
               </div>
             </div>
             <button type="submit" class="fr-btn fr-mt-3w">
