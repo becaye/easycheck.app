@@ -7,36 +7,12 @@
 
 /* ── Variables de statut alignées sur la palette DSFR ────────── */
 :root {
-  --status-nt: #666666;
+  --status-nt: #161616;
   --status-c:  #18753c;
   --status-nc: #ce0500;
-  --status-na: #b34000;
+  --status-na: #929292;
 }
 
-/* ── Barre de progression ─────────────────────────────────────── */
-.ec-progress {
-  position: relative;
-  height: 8px;
-  background: var(--border-default-grey, #dddddd);
-  border-radius: 99px;
-  overflow: visible;
-  margin-bottom: 0.5rem;
-}
-
-.ec-progress__fill {
-  height: 100%;
-  background: var(--background-action-high-blue-france, #000091);
-  border-radius: 99px;
-  transition: width 0.3s ease;
-}
-
-.ec-progress__label {
-  position: absolute;
-  right: 0;
-  top: 14px;
-  font-size: 0.75rem;
-  color: var(--text-mention-grey, #666666);
-}
 
 /* ── Titre de catégorie ───────────────────────────────────────── */
 .ec-category-title {
@@ -64,9 +40,17 @@
   flex-direction: column;
   gap: 0.5rem;
 
-  &[data-status='C']  { border-left: 4px solid var(--status-c); }
-  &[data-status='NC'] { border-left: 4px solid var(--status-nc); }
-  &[data-status='NA'] { border-left: 4px solid var(--status-na); }
+  &[data-status='C'] {
+    border-left: 4px solid var(--status-c);
+  }
+
+  &[data-status='NC'] {
+    border-left: 4px solid var(--status-nc);
+  }
+
+  &[data-status='NA'] {
+    border-left: 4px solid var(--status-na);
+  }
 }
 
 .ec-check-header {
@@ -156,5 +140,61 @@
     border-left: 3px solid var(--status-nc);
     background: color-mix(in srgb, var(--status-nc) 6%, transparent);
     border-radius: 0 4px 4px 0;
+  }
+}
+
+/* ── Surcharge des badges de statut NT et NA ─────────────────── */
+
+.fr-badge.ec-badge--nt {
+  background-color: color-mix(in srgb, var(--status-nt) 8%, transparent);
+  color: var(--status-nt);
+  box-shadow: inset 0 0 0 1px var(--status-nt);
+}
+
+.fr-badge.ec-badge--na {
+  background-color: color-mix(in srgb, var(--status-na) 15%, transparent);
+  color: var(--status-na);
+  box-shadow: inset 0 0 0 1px var(--status-na);
+}
+
+/* ── Barre de progression native DSFR ────────────────────────── */
+.fr-progress-label {
+  font-size: 0.75rem;
+  color: var(--text-mention-grey, #666666);
+}
+
+.fr-progress {
+  width: 100%;
+  height: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 99px;
+  overflow: hidden;
+  display: block;
+  margin-bottom: 0.25rem;
+
+  /* Track (fond) */
+  background: var(--border-default-grey, #dddddd);
+
+  /* Chromium / Safari */
+
+  &::-webkit-progress-bar {
+    background: var(--border-default-grey, #dddddd);
+    border-radius: 99px;
+  }
+
+  &::-webkit-progress-value {
+    background: var(--background-action-high-blue-france, #000091);
+    border-radius: 99px;
+    transition: width 0.3s ease;
+  }
+
+  /* Firefox */
+
+  &::-moz-progress-bar {
+    background: var(--background-action-high-blue-france, #000091);
+    border-radius: 99px;
+    transition: width 0.3s ease;
   }
 }

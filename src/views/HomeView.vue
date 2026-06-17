@@ -36,7 +36,7 @@ function confirmReset(): void {
       <h1 class="fr-h1">Évaluation accessibilité</h1>
       <p class="fr-text--lead">
         Évaluez vos pages selon les contrôles essentiels du W3C —
-        <strong>{{ store.checks.length }} critères</strong>.
+        <strong>{{ store.totalTests }} critères</strong>.
       </p>
     </div>
 

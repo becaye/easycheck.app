@@ -74,3 +74,4 @@ When adding Vue components, follow the installed toolchain:
 - Routes → Vue Router in `src/router/`.
 - Components → `src/components/`.
 
+    

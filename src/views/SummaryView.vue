@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
 import { STATUS_OPTIONS } from '@/constants/status.ts'
 import { useAuditStore } from '@/stores/audit.ts'
 import type { ConformityStatus } from '@/types/check.ts'
@@ -7,17 +8,20 @@ import type { ConformityStatus } from '@/types/check.ts'
 const store = useAuditStore()
 
 const STATUS_BADGE_CLASS: Record<ConformityStatus, string> = {
-  NT: 'fr-badge--new fr-badge--no-icon',
+  NT: 'ec-badge--nt fr-badge--no-icon',
   C: 'fr-badge--success fr-badge--no-icon',
   NC: 'fr-badge--error fr-badge--no-icon',
-  NA: 'fr-badge--warning fr-badge--no-icon',
+  NA: 'ec-badge--na fr-badge--no-icon',
 }
 
 function getStatusBadgeClass(status: ConformityStatus): string {
   return STATUS_BADGE_CLASS[status]
 }
 
-/** Totaux consolidés sur l'ensemble des pages. */
+const breadcrumbLinks = [
+  { text: 'Accueil', to: '/' },
+  { text: 'Synthèse' },
+]
 const totals = computed(() => {
   const acc: Record<ConformityStatus, number> = { NT: 0, C: 0, NC: 0, NA: 0 }
   for (const page of store.pages) {
@@ -40,8 +44,8 @@ const conformityRate = computed(() => {
 const blockingByPage = computed(() =>
   store.pages.map((page) => ({
     page,
-    issues: store.checks.filter(
-      (check) => page.results[check.id]?.status === 'NC',
+    issues: store.allTests.filter(
+      (test) => page.results[test.id]?.status === 'NC',
     ),
   })),
 )
@@ -50,16 +54,7 @@ const blockingByPage = computed(() =>
 <template>
   <div class="fr-container fr-py-4w">
     <!-- Fil d'Ariane -->
-    <nav role="navigation" class="fr-breadcrumb fr-mb-3w" aria-label="vous êtes ici :">
-      <ol class="fr-breadcrumb__list">
-        <li>
-          <RouterLink to="/" class="fr-breadcrumb__link">Accueil</RouterLink>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Synthèse</a>
-        </li>
-      </ol>
-    </nav>
+    <DsfrBreadcrumb class="fr-mb-3w" :links="breadcrumbLinks" />
 
     <div class="fr-mb-4w">
       <h1 class="fr-h1 fr-mb-1w">Synthèse</h1>
@@ -144,16 +139,15 @@ const blockingByPage = computed(() =>
                 <h3 class="fr-h6">{{ entry.page.title }}</h3>
                 <ul class="ec-blocking-list">
                   <li
-                    v-for="check in entry.issues"
-                    :key="check.id"
+                    v-for="test in entry.issues"
+                    :key="test.id"
                   >
-                    <strong>{{ check.category }}</strong>
-                    — {{ check.title }}
+                    {{ test.title }}
                     <em
-                      v-if="entry.page.results[check.id].comment"
+                      v-if="entry.page.results[test.id].comment"
                       class="fr-text--sm"
                     >
-                      ({{ entry.page.results[check.id].comment }})
+                      ({{ entry.page.results[test.id].comment }})
                     </em>
                   </li>
                 </ul>

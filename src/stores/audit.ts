@@ -1,24 +1,28 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import checksData from '@/data/checks.json'
+import criteriaData from '@/data/checks.json'
 import type {
   AuditMeta,
   AuditPage,
-  Check,
+  Criterion,
   CheckResult,
   ConformityStatus,
+  Test,
 } from '@/types/check.ts'
 
 const STORAGE_KEY = 'easychecks:audit'
 
-/** Référentiel des critères chargé depuis le JSON généré par convert-xlsx. */
-const checks = checksData as Check[]
+/** Référentiel des critères chargé depuis le JSON. */
+const criteria = criteriaData as Criterion[]
+
+/** Liste à plat de tous les tests (pour la progression et les stats). */
+const allTests: Test[] = criteria.flatMap((c) => c.tests)
 
 /** Crée un jeu de résultats vierges (tous "Non testé") pour une nouvelle page. */
 function createEmptyResults(): Record<string, CheckResult> {
   const results: Record<string, CheckResult> = {}
-  for (const check of checks) {
-    results[check.id] = { status: 'NT', comment: '' }
+  for (const test of allTests) {
+    results[test.id] = { status: 'NT', comment: '' }
   }
   return results
 }
@@ -67,16 +71,11 @@ export const useAuditStore = defineStore('audit', () => {
     { deep: true },
   )
 
-  /** Liste des critères groupés par catégorie. */
-  const checksByCategory = computed(() => {
-    const groups = new Map<string, Check[]>()
-    for (const check of checks) {
-      const list = groups.get(check.category) ?? []
-      list.push(check)
-      groups.set(check.category, list)
-    }
-    return Array.from(groups, ([category, items]) => ({ category, items }))
-  })
+  /** Liste des critères avec leurs tests (structure hiérarchique). */
+  const checksByCategory = computed(() => criteria)
+
+  /** Nombre total de tests dans le référentiel. */
+  const totalTests = allTests.length
 
   /** Ajoute une page à l'échantillon et retourne son identifiant. */
   function addPage(title: string, url: string): string {
@@ -136,7 +135,9 @@ export const useAuditStore = defineStore('audit', () => {
   return {
     meta,
     pages,
-    checks,
+    criteria,
+    allTests,
+    totalTests,
     checksByCategory,
     addPage,
     removePage,

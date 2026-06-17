@@ -1,38 +1,38 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { DsfrInput } from '@gouvminint/vue-dsfr'
 import { STATUS_OPTIONS } from '@/constants/status.ts'
 import { useAuditStore } from '@/stores/audit.ts'
-import type { Check, ConformityStatus } from '@/types/check.ts'
+import type { Test, ConformityStatus } from '@/types/check.ts'
 
 const props = defineProps<{
   pageId: string
-  check: Check
+  test: Test
 }>()
 
 const store = useAuditStore()
 
 const result = computed(
-  () => store.getPage(props.pageId)?.results[props.check.id],
+  () => store.getPage(props.pageId)?.results[props.test.id],
 )
 
 function selectStatus(status: ConformityStatus): void {
-  store.setStatus(props.pageId, props.check.id, status)
+  store.setStatus(props.pageId, props.test.id, status)
 }
 
-function onComment(event: Event): void {
-  const target = event.target as HTMLTextAreaElement
-  store.setComment(props.pageId, props.check.id, target.value)
+function onComment(value: string | number | undefined): void {
+  store.setComment(props.pageId, props.test.id, String(value ?? ''))
 }
 </script>
 
 <template>
   <li class="ec-check-item" :data-status="result?.status">
     <div class="ec-check-header">
-      <p class="ec-check-title fr-text--sm fr-mb-0">{{ check.title }}</p>
+      <p class="ec-check-title fr-text--sm fr-mb-0">{{ test.title }}</p>
       <div
         class="ec-status-group"
         role="group"
-        :aria-label="`Statut pour : ${check.title}`"
+        :aria-label="`Statut pour : ${test.title}`"
       >
         <button
           v-for="option in STATUS_OPTIONS"
@@ -48,14 +48,16 @@ function onComment(event: Event): void {
         </button>
       </div>
     </div>
-    <textarea
-      class="fr-input ec-check-comment"
-      rows="1"
-      :id="`comment-${check.id}-${pageId}`"
-      :aria-label="`Commentaire pour : ${check.title}`"
+    <DsfrInput
+      :id="`comment-${test.id}-${pageId}`"
+      label="Commentaire"
+      hint="Optionnel"
       placeholder="Commentaire (optionnel)…"
-      :value="result?.comment"
-      @input="onComment"
-    ></textarea>
+      :model-value="result?.comment ?? ''"
+      is-textarea
+      wrapper-class="ec-check-comment"
+      @update:model-value="onComment"
+    />
+
   </li>
 </template>

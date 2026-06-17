@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
 import CheckItem from '@/components/CheckItem.vue'
 import { getStatusOption } from '@/constants/status.ts'
 import { useAuditStore } from '@/stores/audit.ts'
-import type { ConformityStatus } from '@/types/check.ts'
+import type { Criterion, ConformityStatus } from '@/types/check.ts'
 
 const props = defineProps<{ pageId: string }>()
 
@@ -15,20 +16,34 @@ const page = computed(() => store.getPage(props.pageId))
 const stats = computed(() => store.getPageStats(props.pageId))
 
 const progress = computed(() => {
-  const total = store.checks.length
+  const total = store.totalTests
   if (!total) return 0
   return Math.round(((total - stats.value.NT) / total) * 100)
 })
 
 const STATUS_BADGE_CLASS: Record<ConformityStatus, string> = {
-  NT: 'fr-badge--new fr-badge--no-icon',
+  NT: 'ec-badge--nt fr-badge--no-icon',
   C: 'fr-badge--success fr-badge--no-icon',
   NC: 'fr-badge--error fr-badge--no-icon',
-  NA: 'fr-badge--warning fr-badge--no-icon',
+  NA: 'ec-badge--na fr-badge--no-icon',
 }
 
 function getStatusBadgeClass(status: ConformityStatus): string {
   return STATUS_BADGE_CLASS[status]
+}
+
+const breadcrumbLinks = computed(() => [
+  { text: 'Accueil', to: '/' },
+  { text: page.value?.title ?? '' },
+])
+
+function getCriterionStatus(criterion: Criterion): ConformityStatus {
+  const results = criterion.tests.map(
+    (test) => page.value?.results[test.id]?.status ?? 'NT',
+  )
+  if (results.some((s) => s === 'NC')) return 'NC'
+  if (results.some((s) => s === 'NT')) return 'NT'
+  return 'C'
 }
 
 function goHome(): void {
@@ -40,20 +55,11 @@ function goHome(): void {
   <div v-if="page" class="fr-container fr-py-4w">
 
     <!-- Fil d'Ariane -->
-    <nav role="navigation" class="fr-breadcrumb fr-mb-3w" aria-label="vous êtes ici :">
-      <ol class="fr-breadcrumb__list">
-        <li>
-          <RouterLink to="/" class="fr-breadcrumb__link">Accueil</RouterLink>
-        </li>
-        <li>
-          <a class="fr-breadcrumb__link" aria-current="page">{{ page.title }}</a>
-        </li>
-      </ol>
-    </nav>
+    <DsfrBreadcrumb class="fr-mb-3w" :links="breadcrumbLinks" />
 
     <!-- En-tête de page -->
     <div class="fr-mb-4w">
-      <h1 class="fr-h1 fr-mb-1w">{{ page.title }}</h1>
+      <h1 class="fr-h1 fr-mb-1w">Évaluation de la page : {{ page.title }}</h1>
       <p>
         <a :href="page.url" target="_blank" rel="noopener" class="fr-link">
           {{ page.url }}
@@ -62,18 +68,8 @@ function goHome(): void {
     </div>
 
     <!-- Barre de progression -->
-    <div
-      class="ec-progress fr-mb-2w"
-      role="progressbar"
-      :aria-valuenow="progress"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      :aria-label="`Progression : ${progress}%`"
-    >
-      <div class="ec-progress__fill" :style="{ width: `${progress}%` }"></div>
-      <span class="ec-progress__label">{{ progress }}&nbsp;% évalué</span>
-    </div>
-
+    <label for="progress" class="fr-progress-label">Progression de l'évaluation : {{ progress }}&nbsp;% évalué</label>
+    <progress id="progress" class="fr-progress fr-mb-2w" max="100" :value="progress">{{ progress }}&nbsp;% évalué</progress>
     <!-- Badges de statut -->
     <div class="fr-mb-4w" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
       <span
@@ -86,19 +82,27 @@ function goHome(): void {
       </span>
     </div>
 
-    <!-- Critères par catégorie -->
+    <!-- Critères (sections) et leurs tests (sous-sections) -->
     <section
-      v-for="group in store.checksByCategory"
-      :key="group.category"
+      v-for="criterion in store.checksByCategory"
+      :key="criterion.id"
       class="fr-mb-4w"
     >
-      <h2 class="fr-h5 ec-category-title">{{ group.category }}</h2>
+      <h2 class="fr-h5 ec-category-title">
+        {{ criterion.title }}
+        <span
+          class="fr-badge fr-badge--sm fr-ml-1w"
+          :class="getStatusBadgeClass(getCriterionStatus(criterion))"
+        >
+          {{ getStatusOption(getCriterionStatus(criterion)).short }}
+        </span>
+      </h2>
       <ul class="ec-check-list">
         <CheckItem
-          v-for="check in group.items"
-          :key="check.id"
+          v-for="test in criterion.tests"
+          :key="test.id"
           :page-id="pageId"
-          :check="check"
+          :test="test"
         />
       </ul>
     </section>
