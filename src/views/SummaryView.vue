@@ -1,21 +1,33 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
+import { DsfrBadge, DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
+import type { DsfrBadgeProps } from '@gouvminint/vue-dsfr'
 import { STATUS_OPTIONS } from '@/constants/status.ts'
 import { useAuditStore } from '@/stores/audit.ts'
 import type { ConformityStatus } from '@/types/check.ts'
 
 const store = useAuditStore()
 
-const STATUS_BADGE_CLASS: Record<ConformityStatus, string> = {
-  NT: 'ec-badge--nt fr-badge--no-icon',
-  C: 'fr-badge--success fr-badge--no-icon',
-  NC: 'fr-badge--error fr-badge--no-icon',
-  NA: 'ec-badge--na fr-badge--no-icon',
+const STATUS_BADGE_TYPE: Record<ConformityStatus, DsfrBadgeProps['type']> = {
+  NT: undefined,
+  C: 'success',
+  NC: 'error',
+  NA: undefined,
 }
 
-function getStatusBadgeClass(status: ConformityStatus): string {
-  return STATUS_BADGE_CLASS[status]
+const STATUS_BADGE_EXTRA_CLASS: Record<ConformityStatus, string> = {
+  NT: 'ec-badge--nt',
+  C: '',
+  NC: '',
+  NA: 'ec-badge--na',
+}
+
+function getStatusBadgeType(status: ConformityStatus): DsfrBadgeProps['type'] {
+  return STATUS_BADGE_TYPE[status]
+}
+
+function getStatusBadgeExtraClass(status: ConformityStatus): string {
+  return STATUS_BADGE_EXTRA_CLASS[status]
 }
 
 const breadcrumbLinks = [
@@ -80,14 +92,14 @@ const blockingByPage = computed(() =>
           </p>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <span
+          <DsfrBadge
             v-for="option in STATUS_OPTIONS"
             :key="option.value"
-            class="fr-badge"
-            :class="getStatusBadgeClass(option.value)"
-          >
-            {{ option.label }}&nbsp;: {{ totals[option.value] }}
-          </span>
+            :label="`${option.label}\u00a0: ${totals[option.value]}`"
+            :type="getStatusBadgeType(option.value)"
+            :class="getStatusBadgeExtraClass(option.value)"
+            no-icon
+          />
         </div>
       </div>
 
@@ -166,4 +178,3 @@ const blockingByPage = computed(() =>
     </template>
   </div>
 </template>
-

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
+import { DsfrBadge, DsfrBreadcrumb, DsfrButton } from '@gouvminint/vue-dsfr'
+import type { DsfrBadgeProps } from '@gouvminint/vue-dsfr'
 import CheckItem from '@/components/CheckItem.vue'
 import { getStatusOption } from '@/constants/status.ts'
 import { useAuditStore } from '@/stores/audit.ts'
@@ -21,15 +22,26 @@ const progress = computed(() => {
   return Math.round(((total - stats.value.NT) / total) * 100)
 })
 
-const STATUS_BADGE_CLASS: Record<ConformityStatus, string> = {
-  NT: 'ec-badge--nt fr-badge--no-icon',
-  C: 'fr-badge--success fr-badge--no-icon',
-  NC: 'fr-badge--error fr-badge--no-icon',
-  NA: 'ec-badge--na fr-badge--no-icon',
+const STATUS_BADGE_TYPE: Record<ConformityStatus, DsfrBadgeProps['type']> = {
+  NT: undefined,
+  C: 'success',
+  NC: 'error',
+  NA: undefined,
 }
 
-function getStatusBadgeClass(status: ConformityStatus): string {
-  return STATUS_BADGE_CLASS[status]
+const STATUS_BADGE_EXTRA_CLASS: Record<ConformityStatus, string> = {
+  NT: 'ec-badge--nt',
+  C: '',
+  NC: '',
+  NA: 'ec-badge--na',
+}
+
+function getStatusBadgeType(status: ConformityStatus): DsfrBadgeProps['type'] {
+  return STATUS_BADGE_TYPE[status]
+}
+
+function getStatusBadgeExtraClass(status: ConformityStatus): string {
+  return STATUS_BADGE_EXTRA_CLASS[status]
 }
 
 const breadcrumbLinks = computed(() => [
@@ -70,16 +82,17 @@ function goHome(): void {
     <!-- Barre de progression -->
     <label for="progress" class="fr-progress-label">Progression de l'évaluation : {{ progress }}&nbsp;% évalué</label>
     <progress id="progress" class="fr-progress fr-mb-2w" max="100" :value="progress">{{ progress }}&nbsp;% évalué</progress>
+
     <!-- Badges de statut -->
     <div class="fr-mb-4w" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-      <span
+      <DsfrBadge
         v-for="(count, status) in stats"
         :key="status"
-        class="fr-badge"
-        :class="getStatusBadgeClass(status as ConformityStatus)"
-      >
-        {{ getStatusOption(status as ConformityStatus).label }}&nbsp;: {{ count }}
-      </span>
+        :label="`${getStatusOption(status as ConformityStatus).label}\u00a0: ${count}`"
+        :type="getStatusBadgeType(status as ConformityStatus)"
+        :class="getStatusBadgeExtraClass(status as ConformityStatus)"
+        no-icon
+      />
     </div>
 
     <!-- Critères (sections) et leurs tests (sous-sections) -->
@@ -88,14 +101,16 @@ function goHome(): void {
       :key="criterion.id"
       class="fr-mb-4w"
     >
-      <h2 class="fr-h5 ec-category-title">
+      <h2 class="fr-h3 ec-category-title">
         {{ criterion.title }}
-        <span
-          class="fr-badge fr-badge--sm fr-ml-1w"
-          :class="getStatusBadgeClass(getCriterionStatus(criterion))"
-        >
-          {{ getStatusOption(getCriterionStatus(criterion)).short }}
-        </span>
+        <DsfrBadge
+          class="fr-ml-1w"
+          :label="getStatusOption(getCriterionStatus(criterion)).short"
+          :type="getStatusBadgeType(getCriterionStatus(criterion))"
+          :class="getStatusBadgeExtraClass(getCriterionStatus(criterion))"
+          no-icon
+          small
+        />
       </h2>
       <ul class="ec-check-list">
         <CheckItem
@@ -125,9 +140,7 @@ function goHome(): void {
       <h3 class="fr-alert__title">Page introuvable</h3>
       <p>Cette page n'existe pas dans l'échantillon d'audit.</p>
     </div>
-    <button type="button" class="fr-btn" @click="goHome">
-      Retour à l'échantillon
-    </button>
+    <DsfrButton type="button" label="Retour à l'échantillon" icon="fr-icon-arrow-left-line" @click="goHome" />
   </div>
 </template>
 

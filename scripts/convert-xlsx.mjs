@@ -4,11 +4,11 @@
 // Lit l'onglet "criteres" du classeur et produit src/data/checks.json.
 // Affiche aussi un aperçu de chaque onglet pour faciliter le mapping.
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { writeFile, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = join(__dirname, '..')
@@ -46,18 +46,34 @@ function pick(row, aliases) {
   return ''
 }
 
+/**
+ * Extrait la valeur textuelle d'une cellule exceljs (gère les rich-text).
+ * @param {unknown} cell
+ */
+function cellText(cell) {
+  if (cell === null || cell === undefined) return ''
+  if (typeof cell === 'object' && 'richText' in cell) {
+    return cell.richText.map((r) => r.text).join('')
+  }
+  if (typeof cell === 'object' && 'text' in cell) {
+    return String(cell.text)
+  }
+  return String(cell)
+}
+
 async function main() {
   if (!existsSync(SOURCE_XLSX)) {
     console.error(`❌ Fichier introuvable : ${SOURCE_XLSX}`)
     process.exit(1)
   }
 
-  const buffer = await readFile(SOURCE_XLSX)
-  const workbook = XLSX.read(buffer, { type: 'buffer' })
+  const workbook = new ExcelJS.Workbook()
+  await workbook.xlsx.readFile(SOURCE_XLSX)
 
-  console.log('📑 Onglets détectés :', workbook.SheetNames.join(', '))
+  const sheetNames = workbook.worksheets.map((ws) => ws.name)
+  console.log('📑 Onglets détectés :', sheetNames.join(', '))
 
-  const sheetName = workbook.SheetNames.find(
+  const sheetName = sheetNames.find(
     (name) => normalizeKey(name) === normalizeKey(CRITERIA_SHEET),
   )
 
@@ -66,9 +82,27 @@ async function main() {
     process.exit(1)
   }
 
-  const sheet = workbook.Sheets[sheetName]
+  const sheet = workbook.getWorksheet(sheetName)
+
+  // Lire la première ligne comme en-têtes
+  /** @type {string[]} */
+  let headers = []
   /** @type {Record<string, unknown>[]} */
-  const rawRows = XLSX.utils.sheet_to_json(sheet, { defval: '' })
+  const rawRows = []
+
+  sheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) {
+      // row.values est indexé à partir de 1, index 0 = null
+      headers = row.values.slice(1).map((v) => cellText(v))
+      return
+    }
+    /** @type {Record<string, unknown>} */
+    const obj = {}
+    row.values.slice(1).forEach((val, idx) => {
+      obj[headers[idx] ?? `col_${idx}`] = cellText(val)
+    })
+    rawRows.push(obj)
+  })
 
   if (rawRows.length === 0) {
     console.error(`❌ L'onglet "${sheetName}" est vide.`)
@@ -77,7 +111,7 @@ async function main() {
 
   console.log(
     `🔎 Colonnes de "${sheetName}" :`,
-    Object.keys(rawRows[0]).join(' | '),
+    headers.join(' | '),
   )
 
   let lastCategory = ''
@@ -123,4 +157,3 @@ main().catch((error) => {
   console.error('❌ Erreur lors de la conversion :', error)
   process.exit(1)
 })
-

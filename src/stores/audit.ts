@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import criteriaData from '@/data/checks.json'
+import rawChecks from '@/data/checks.json'
 import type {
   AuditMeta,
   AuditPage,
@@ -12,8 +12,26 @@ import type {
 
 const STORAGE_KEY = 'easychecks:audit'
 
+/** Transforme la liste plate en critères hiérarchiques (groupés par category). */
+function buildCriteria(): Criterion[] {
+  const map = new Map<string, { id: string; title: string; tests: Test[] }>()
+  for (const item of rawChecks) {
+    let criterion = map.get(item.category)
+    if (!criterion) {
+      criterion = {
+        id: `CAT-${map.size + 1}`,
+        title: item.category,
+        tests: [],
+      }
+      map.set(item.category, criterion)
+    }
+    criterion.tests.push({ id: item.id, title: item.title, notes: item.notes })
+  }
+  return Array.from(map.values())
+}
+
 /** Référentiel des critères chargé depuis le JSON. */
-const criteria = criteriaData as Criterion[]
+const criteria = buildCriteria()
 
 /** Liste à plat de tous les tests (pour la progression et les stats). */
 const allTests: Test[] = criteria.flatMap((c) => c.tests)
@@ -33,7 +51,7 @@ function nextPageId(pages: AuditPage[]): string {
   return `P${String(num).padStart(2, '0')}`
 }
 
-interface PersistedState {
+export interface PersistedState {
   meta: AuditMeta
   pages: AuditPage[]
 }
@@ -132,6 +150,12 @@ export const useAuditStore = defineStore('audit', () => {
     pages.value = []
   }
 
+  /** Restaure un état complet (import). */
+  function restore(state: PersistedState): void {
+    meta.value = state.meta
+    pages.value = state.pages
+  }
+
   return {
     meta,
     pages,
@@ -146,6 +170,7 @@ export const useAuditStore = defineStore('audit', () => {
     setComment,
     getPageStats,
     reset,
+    restore,
   }
 })
 
