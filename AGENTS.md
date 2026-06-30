@@ -17,6 +17,7 @@ Vite + TypeScript application for accessibility evaluation ("easy checks"). The 
 
 ## Developer Workflows
 
+
 ```bash
 npm run dev       # start dev server (HMR)
 npm run build     # tsc type-check + vite build

@@ -16,7 +16,7 @@
           <div class="fr-header__brand fr-enlarge-link">
             <div class="fr-header__brand-top">
               <div class="fr-header__logo">
-                <p class="fr-logo">République<br>Française</p>
+                <p class="fr-logo">République<br />Française</p>
               </div>
             </div>
             <div class="fr-header__service">
@@ -42,4 +42,3 @@
     <RouterView />
   </main>
 </template>
-

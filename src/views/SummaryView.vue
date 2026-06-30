@@ -1,66 +1,63 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { DsfrBadge, DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
-import type { DsfrBadgeProps } from '@gouvminint/vue-dsfr'
-import { STATUS_OPTIONS } from '@/constants/status.ts'
-import { useAuditStore } from '@/stores/audit.ts'
-import type { ConformityStatus } from '@/types/check.ts'
+import { computed } from "vue";
+import { DsfrBadge, DsfrBreadcrumb } from "@gouvminint/vue-dsfr";
+import type { DsfrBadgeProps } from "@gouvminint/vue-dsfr";
+import { STATUS_OPTIONS } from "@/constants/status.ts";
+import { useAuditStore } from "@/stores/audit.ts";
+import type { ConformityStatus } from "@/types/check.ts";
 
-const store = useAuditStore()
+const store = useAuditStore();
 
-const STATUS_BADGE_TYPE: Record<ConformityStatus, DsfrBadgeProps['type']> = {
+const STATUS_BADGE_TYPE: Record<ConformityStatus, DsfrBadgeProps["type"]> = {
   NT: undefined,
-  C: 'success',
-  NC: 'error',
+  C: "success",
+  NC: "error",
   NA: undefined,
-}
+};
 
 const STATUS_BADGE_EXTRA_CLASS: Record<ConformityStatus, string> = {
-  NT: 'ec-badge--nt',
-  C: '',
-  NC: '',
-  NA: 'ec-badge--na',
-}
+  NT: "ec-badge--nt",
+  C: "",
+  NC: "",
+  NA: "ec-badge--na",
+};
 
-function getStatusBadgeType(status: ConformityStatus): DsfrBadgeProps['type'] {
-  return STATUS_BADGE_TYPE[status]
+function getStatusBadgeType(status: ConformityStatus): DsfrBadgeProps["type"] {
+  return STATUS_BADGE_TYPE[status];
 }
 
 function getStatusBadgeExtraClass(status: ConformityStatus): string {
-  return STATUS_BADGE_EXTRA_CLASS[status]
+  return STATUS_BADGE_EXTRA_CLASS[status];
 }
 
-const breadcrumbLinks = [
-  { text: 'Accueil', to: '/' },
-  { text: 'Synthèse' },
-]
+const breadcrumbLinks = [{ text: "Accueil", to: "/" }, { text: "Synthèse" }];
 const totals = computed(() => {
-  const acc: Record<ConformityStatus, number> = { NT: 0, C: 0, NC: 0, NA: 0 }
+  const acc: Record<ConformityStatus, number> = { NT: 0, C: 0, NC: 0, NA: 0 };
   for (const page of store.pages) {
-    const stats = store.getPageStats(page.id)
+    const stats = store.getPageStats(page.id);
     for (const option of STATUS_OPTIONS) {
-      acc[option.value] += stats[option.value]
+      acc[option.value] += stats[option.value];
     }
   }
-  return acc
-})
+  return acc;
+});
 
 /** Taux de conformité (C / (C + NC)) en ignorant NT et NA. */
 const conformityRate = computed(() => {
-  const { C, NC } = totals.value
-  const tested = C + NC
-  return tested === 0 ? null : Math.round((C / tested) * 100)
-})
+  const { C, NC } = totals.value;
+  const tested = C + NC;
+  return tested === 0 ? null : Math.round((C / tested) * 100);
+});
 
 /** Critères non conformes regroupés par page (points bloquants). */
 const blockingByPage = computed(() =>
   store.pages.map((page) => ({
     page,
     issues: store.allTests.filter(
-      (test) => page.results[test.id]?.status === 'NC',
+      (test) => page.results[test.id]?.status === "NC",
     ),
   })),
-)
+);
 </script>
 
 <template>
@@ -85,13 +82,13 @@ const blockingByPage = computed(() =>
       <div class="fr-callout fr-mb-4w ec-score-callout">
         <div class="ec-score-main">
           <span class="ec-score-value">
-            {{ conformityRate === null ? '—' : `${conformityRate} %` }}
+            {{ conformityRate === null ? "—" : `${conformityRate} %` }}
           </span>
           <p class="fr-callout__text fr-mb-2w">
             Taux de conformité (C&nbsp;/&nbsp;C+NC)
           </p>
         </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem">
           <DsfrBadge
             v-for="option in STATUS_OPTIONS"
             :key="option.value"
@@ -106,7 +103,9 @@ const blockingByPage = computed(() =>
       <!-- ── Détail par page ──────────────────────────── -->
       <div class="fr-table fr-mb-4w">
         <table>
-          <caption>Détail par page</caption>
+          <caption>
+            Détail par page
+          </caption>
           <thead>
             <tr>
               <th scope="col">Page</th>
@@ -129,10 +128,7 @@ const blockingByPage = computed(() =>
                   {{ page.title }}
                 </RouterLink>
               </th>
-              <td
-                v-for="option in STATUS_OPTIONS"
-                :key="option.value"
-              >
+              <td v-for="option in STATUS_OPTIONS" :key="option.value">
                 {{ store.getPageStats(page.id)[option.value] }}
               </td>
             </tr>
@@ -147,13 +143,13 @@ const blockingByPage = computed(() =>
             <h2 class="fr-h4 fr-mb-3w">Points bloquants (non conformes)</h2>
 
             <template v-for="entry in blockingByPage" :key="entry.page.id">
-              <div v-if="entry.issues.length" class="ec-blocking-group fr-mb-3w">
+              <div
+                v-if="entry.issues.length"
+                class="ec-blocking-group fr-mb-3w"
+              >
                 <h3 class="fr-h6">{{ entry.page.title }}</h3>
                 <ul class="ec-blocking-list">
-                  <li
-                    v-for="test in entry.issues"
-                    :key="test.id"
-                  >
+                  <li v-for="test in entry.issues" :key="test.id">
                     {{ test.title }}
                     <em
                       v-if="entry.page.results[test.id].comment"
